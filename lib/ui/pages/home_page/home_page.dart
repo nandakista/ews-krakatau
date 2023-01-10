@@ -3,6 +3,7 @@ import 'package:untitled/core/app_color.dart';
 import 'package:untitled/core/helper/bottom_sheet_helper.dart';
 import 'package:untitled/ui/pages/chart/chart_page.dart';
 import 'package:untitled/ui/pages/home_page/components/choose_pumma_bottom_sheet.dart';
+import 'package:untitled/ui/pages/webview/webview_page.dart';
 
 import '../all/all_page.dart';
 import '../data/data_page.dart';
@@ -21,7 +22,7 @@ class _HomePageState extends State<HomePage>
 
   @override
   void initState() {
-    tabController = TabController(length: 4, vsync: this);
+    tabController = TabController(length: 5, vsync: this);
     super.initState();
   }
 
@@ -144,6 +145,15 @@ class _HomePageState extends State<HomePage>
                               : Colors.white),
                     ),
                   ),
+                  Tab(
+                    child: Text(
+                      'WebView',
+                      style: TextStyle(
+                          color: (tabController?.index == 4)
+                              ? Colors.black
+                              : Colors.white, fontSize: 10),
+                    ),
+                  ),
                 ],
               )
             ],
@@ -160,6 +170,7 @@ class _HomePageState extends State<HomePage>
           DataPage(),
           GaugePage(),
           ChartPage(),
+          WebViewPage()
         ],
       ),
     );

@@ -19,6 +19,7 @@ dependencies:
   syncfusion_flutter_charts: ^20.3.59
   intl: ^0.17.0
   modal_bottom_sheet: ^2.1.0
+  webview_flutter: ^3.0.4
 
 dev_dependencies:
   flutter_test:
