@@ -21,10 +21,15 @@ class _GaugePageState extends State<GaugePage> {
   GaugeBattery gaugeBattery = GaugeBattery(data: '0');
   GaugeRasp gaugeRaspi = GaugeRasp(data: '0');
 
+  Timer? timer1;
+  Timer? timer2;
+
   @override
   void initState() {
-    Timer.periodic(const Duration(seconds: 3), updateDataSource1);
-    Timer.periodic(const Duration(seconds: 3), updateDataSource2);
+    timer1 = Timer.periodic(const Duration(seconds: 3), updateDataSource1);
+    timer2 = Timer.periodic(const Duration(seconds: 3), updateDataSource2);
+    timer1;
+    timer2;
     super.initState();
   }
 
@@ -64,6 +69,8 @@ class _GaugePageState extends State<GaugePage> {
   @override
   void dispose() {
     gaugeDataBattery.clear();
+    timer1?.cancel();
+    timer2?.cancel();
     super.dispose();
   }
 

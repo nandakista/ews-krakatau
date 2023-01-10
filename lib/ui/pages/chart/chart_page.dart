@@ -3,8 +3,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:untitled/data/models/data.dart';
-import 'package:untitled/data/models/gauge_battery.dart';
-import 'package:untitled/data/models/gauge_rasp.dart';
 
 import 'components/graph_component_battery.dart';
 import 'components/graph_component_humidity.dart';
@@ -24,13 +22,22 @@ class _ChartPageState extends State<ChartPage> {
   List<Data> dataTemp = [];
   DateTime now = DateTime.now();
 
+  Timer? timer;
+
 
   @override
   void initState() {
-    Timer.periodic(const Duration(seconds: 5), updateDataSource);
+    timer = Timer.periodic(const Duration(seconds: 5), updateDataSource);
+    timer;
     super.initState();
     refresh();
     timeNow();
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
   }
 
   void updateDataSource(Timer timer) {

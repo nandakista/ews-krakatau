@@ -18,10 +18,12 @@ class _DataPageState extends State<DataPage> {
   List<Data> dataHumidity = [];
   List<Data> dataTemp = [];
   DateTime now = DateTime.now();
+  Timer? timer;
 
   @override
   void initState() {
-    Timer.periodic(const Duration(seconds: 5), updateDataSource);
+    timer = Timer.periodic(const Duration(seconds: 5), updateDataSource);
+    timer;
     super.initState();
     refresh();
     timeNow();
@@ -87,6 +89,12 @@ class _DataPageState extends State<DataPage> {
     } catch (e) {
       debugPrint(e.toString());
     }
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
   }
 
   @override
