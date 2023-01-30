@@ -51,6 +51,12 @@ class CartController extends GetxController {
     if (dataWaterLevel.length > 50) dataWaterLevel.removeAt(0);
   }
 
+  @override
+  void onClose() {
+    timer?.cancel(); // Delete this line if all data already fetch from engine
+    client.disconnect();
+    super.onClose();
+  }
   // --------------------------------------------------------
   //                 TODO: Fetch Using Dummy Data
   // --------------------------------------------------------
@@ -70,13 +76,6 @@ class CartController extends GetxController {
     refreshData();
     timeNow();
     super.onInit();
-  }
-
-  @override
-  void onClose() {
-    timer?.cancel();
-    client.disconnect();
-    super.onClose();
   }
 
   void timeNow() {
