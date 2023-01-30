@@ -1,12 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
-
-final client = MqttServerClient.withPort('194.59.165.32', 'rama', 1883);
-
-var data;
 Future<MqttServerClient> connectClient() async {
   String tag = 'MqttClient';
 
@@ -23,54 +20,48 @@ Future<MqttServerClient> connectClient() async {
       .startClean()
       .withWillQos(MqttQos.atLeastOnce);
   client.connectionMessage = connMessage;
+  return client;
 
   try {
     await client.connect();
     client.subscribe('pummamqtt', MqttQos.atLeastOnce);
   } catch (e) {
-    print('Errornya karena : $e');
+    debugPrint('Errornya karena : $e');
     client.disconnect();
   }
 
   client.updates!.listen((List<MqttReceivedMessage<MqttMessage>> c) {
-    print('$tag payload = ${c[0].topic}');
+    debugPrint('$tag payload = ${c[0].topic}');
     final MqttPublishMessage message = c[0].payload as MqttPublishMessage;
     final payload =
         MqttPublishPayload.bytesToStringAsString(message.payload.message);
-    data = jsonDecode(payload);
-    print('DATA FROM SENSOR : $payload');
-    print('Ketinggian Air : ${data['tinggi']}!');
+    final data = jsonDecode(payload);
+    debugPrint('DATA FROM SENSOR : $payload');
+    debugPrint('Ketinggian Air : ${data['tinggi']}!');
   });
-
-   return client;
 }
 
-// connection succeeded
 void onConnected() {
-  print('Connected');
+  debugPrint('Connected');
 }
 
-// unconnected
 void onDisconnected() {
-  print('Disconnected');
+  debugPrint('Disconnected');
 }
 
-// subscribe to topic succeeded
 void onSubscribed(String topic) {
-  print('Subscribed topic: $topic');
+  debugPrint('Subscribed topic: $topic');
 }
 
-// subscribe to topic failed
 void onSubscribeFail(String topic) {
-  print('Failed to subscribe $topic');
+  debugPrint('Failed to subscribe $topic');
 }
 
-// unsubscribe succeeded
 void onUnsubscribed(String topic) {
-  print('Unsubscribed topic: $topic');
+  debugPrint('Unsubscribed topic: $topic');
 }
 
 // PING response received
 void pong() {
-  print('Ping response client callback invoked');
+  debugPrint('Ping response client callback invoked');
 }
