@@ -23,14 +23,14 @@ class _HomePageState extends State<HomePage>
 
   @override
   void initState() {
-    connectClientMtqq();
+    // connectClientMtqq();
     tabController = TabController(length: 5, vsync: this);
     super.initState();
   }
 
-  connectClientMtqq() async {
-    await connectClient();
-  }
+  // connectClientMtqq() async {
+  //   await connectClient();
+  // }
 
   @override
   Widget build(BuildContext context) {

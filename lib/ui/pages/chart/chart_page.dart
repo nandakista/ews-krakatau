@@ -20,7 +20,7 @@ class ChartPage extends StatelessWidget {
             const SizedBox(height: 12),
             Obx(
               () => GraphComponentSeaWaterLevel(
-                chartData: controller.dataPressure.value,
+                chartData: controller.dataWaterLevel.value,
                 yTitle: 'Sea Water Level (Cm)',
               ),
             ),

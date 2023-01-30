@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:untitled/data/models/data.dart';
+import 'package:untitled/data/models/water_level.dart';
 import 'package:untitled/ui/widgets/sky_box.dart';
 
 class GraphComponentSeaWaterLevel extends StatelessWidget {
-  final List<Data> chartData;
+  final List<WaterLevel> chartData;
   final String yTitle;
 
   const GraphComponentSeaWaterLevel({
@@ -49,12 +50,12 @@ class GraphComponentSeaWaterLevel extends StatelessWidget {
                   ],
                 ),
                 SfCartesianChart(
-                  series: <LineSeries<Data, DateTime>>[
-                    LineSeries<Data, DateTime>(
+                  series: <LineSeries<WaterLevel, DateTime>>[
+                    LineSeries<WaterLevel, DateTime>(
                       dataSource: chartData,
                       color: const Color.fromARGB(255, 0, 26, 255),
-                      xValueMapper: (Data data, _) => data.timeStamp!,
-                      yValueMapper: (Data data, _) => double.parse(data.value),
+                      xValueMapper: (WaterLevel data, _) => data.timeStamp,
+                      yValueMapper: (WaterLevel data, _) => data.tinggi,
                     )
                   ],
                   primaryXAxis: DateTimeAxis(

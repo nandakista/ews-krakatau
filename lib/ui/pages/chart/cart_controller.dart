@@ -3,9 +3,17 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:mqtt_client/mqtt_client.dart';
 import 'package:untitled/data/models/data.dart';
+import 'package:untitled/data/models/water_level.dart';
+import 'package:untitled/data/network/mqtt_client.dart';
 
 class CartController extends GetxController {
+  String tag = 'CartController::->';
+  final client = MqttNetwork.client();
+  final waterLevel = Rxn<WaterLevel>();
+
+  RxList<WaterLevel> dataWaterLevel = <WaterLevel>[].obs;
   RxList<Data> dataPressure = <Data>[].obs;
   RxList<Data> dataHumidity = <Data>[].obs;
   RxList<Data> dataTemp = <Data>[].obs;
@@ -24,9 +32,35 @@ class CartController extends GetxController {
   }
 
   @override
+  void onReady() async {
+    try {
+      await client.connect();
+      client.subscribe('pummamqtt', MqttQos.atLeastOnce);
+      loadWaterLevel();
+    } catch (e) {
+      debugPrint('Errornya karena : $e');
+      client.disconnect();
+    }
+    super.onReady();
+  }
+
+  @override
   void onClose() {
     timer?.cancel();
+    client.disconnect();
     super.onClose();
+  }
+
+  loadWaterLevel() {
+    client.updates!.listen((List<MqttReceivedMessage<MqttMessage>> c) {
+      final MqttPublishMessage message = c[0].payload as MqttPublishMessage;
+      final payload =
+          MqttPublishPayload.bytesToStringAsString(message.payload.message);
+      final data = waterLevelFromJson(payload);
+      waterLevel.value = data;
+      updateWaterLevel(waterLevel: waterLevel.value!);
+      debugPrint('$tag payload = ${waterLevel.toJson()}');
+    });
   }
 
   void timeNow() {
@@ -38,6 +72,12 @@ class CartController extends GetxController {
 
   void refreshData() async {
     try {
+      // updateWaterLevel(
+      //   waterLevel: WaterLevel(
+      //     tinggi: Random().nextInt(2000).toDouble(),
+      //     timeStamp: DateTime.now(),
+      //   ),
+      // );
       updatePressure();
       updateHumidity();
       updateTemperature();
@@ -48,6 +88,11 @@ class CartController extends GetxController {
     } catch (e) {
       debugPrint(e.toString());
     }
+  }
+
+  updateWaterLevel({required WaterLevel waterLevel}) {
+    dataWaterLevel.add(waterLevel);
+    if (dataWaterLevel.length > 50) dataWaterLevel.removeAt(0);
   }
 
   updatePressure() {
