@@ -5,14 +5,55 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:untitled/data/models/data.dart';
-import 'package:untitled/data/models/water_level.dart';
+import 'package:untitled/data/models/server/water_level.dart';
 import 'package:untitled/data/network/mqtt_client.dart';
 
 class CartController extends GetxController {
   String tag = 'CartController::->';
   final client = MqttNetwork.client();
+
+  // --------------------------------------------------------
+  //              TODO: Fetch Data From Server
+  // --------------------------------------------------------
   final waterLevel = Rxn<WaterLevel>();
 
+  @override
+  void onReady() async {
+    try {
+      await client.connect();
+
+      // TODO: Add Here if have another data
+      client.subscribe('pummamqtt', MqttQos.atLeastOnce);
+      loadWaterLevel();
+      // ...
+      // ...
+    } catch (e) {
+      debugPrint('Errornya karena : $e');
+      client.disconnect();
+    }
+    super.onReady();
+  }
+
+  loadWaterLevel() {
+    client.updates!.listen((List<MqttReceivedMessage<MqttMessage>> c) {
+      final MqttPublishMessage message = c[0].payload as MqttPublishMessage;
+      final payload =
+      MqttPublishPayload.bytesToStringAsString(message.payload.message);
+      final data = waterLevelFromJson(payload);
+      waterLevel.value = data;
+      updateWaterLevel(waterLevel: waterLevel.value!);
+      debugPrint('$tag payload = ${waterLevel.toJson()}');
+    });
+  }
+
+  updateWaterLevel({required WaterLevel waterLevel}) {
+    dataWaterLevel.add(waterLevel);
+    if (dataWaterLevel.length > 50) dataWaterLevel.removeAt(0);
+  }
+
+  // --------------------------------------------------------
+  //                 TODO: Fetch Using Dummy Data
+  // --------------------------------------------------------
   RxList<WaterLevel> dataWaterLevel = <WaterLevel>[].obs;
   RxList<Data> dataPressure = <Data>[].obs;
   RxList<Data> dataHumidity = <Data>[].obs;
@@ -32,35 +73,10 @@ class CartController extends GetxController {
   }
 
   @override
-  void onReady() async {
-    try {
-      await client.connect();
-      client.subscribe('pummamqtt', MqttQos.atLeastOnce);
-      loadWaterLevel();
-    } catch (e) {
-      debugPrint('Errornya karena : $e');
-      client.disconnect();
-    }
-    super.onReady();
-  }
-
-  @override
   void onClose() {
     timer?.cancel();
     client.disconnect();
     super.onClose();
-  }
-
-  loadWaterLevel() {
-    client.updates!.listen((List<MqttReceivedMessage<MqttMessage>> c) {
-      final MqttPublishMessage message = c[0].payload as MqttPublishMessage;
-      final payload =
-          MqttPublishPayload.bytesToStringAsString(message.payload.message);
-      final data = waterLevelFromJson(payload);
-      waterLevel.value = data;
-      updateWaterLevel(waterLevel: waterLevel.value!);
-      debugPrint('$tag payload = ${waterLevel.toJson()}');
-    });
   }
 
   void timeNow() {
@@ -72,6 +88,7 @@ class CartController extends GetxController {
 
   void refreshData() async {
     try {
+      // TODO: Uncomment code below if you want use Dummy Data
       // updateWaterLevel(
       //   waterLevel: WaterLevel(
       //     tinggi: Random().nextInt(2000).toDouble(),
@@ -88,11 +105,6 @@ class CartController extends GetxController {
     } catch (e) {
       debugPrint(e.toString());
     }
-  }
-
-  updateWaterLevel({required WaterLevel waterLevel}) {
-    dataWaterLevel.add(waterLevel);
-    if (dataWaterLevel.length > 50) dataWaterLevel.removeAt(0);
   }
 
   updatePressure() {

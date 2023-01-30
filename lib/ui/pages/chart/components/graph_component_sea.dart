@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:untitled/data/models/data.dart';
-import 'package:untitled/data/models/water_level.dart';
+import 'package:untitled/data/models/server/water_level.dart';
 import 'package:untitled/ui/widgets/sky_box.dart';
 
 class GraphComponentSeaWaterLevel extends StatelessWidget {
